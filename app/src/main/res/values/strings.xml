@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Geoquiz</string>
+    <string name="question_text">Hellow world!</string>
+    <string name="true_btn">ture</string>
+    <string name="false_btn">false</string>
+    <string name="next_imgBtn">next</string>
+    <string name="last_imgBtn">last</string>
+    <string name="show_true">答对了</string>
+    <string name="show_false">答错了</string>
+    <string name="q1">中国的首都是北京</string>
+    <string name="q2">太平洋比大西洋大</string>
+    <string name="q3">苏伊士运河连接红海和地中海</string>
+    <string name="q4">尼罗河源头位于罗马</string>
+    <string name="q5">亚马逊河是英国最长的河流</string>
+    <string name="q6">死海是世界上最古老及最深的淡水湖</string>
+    <string name="q7">潘长江是中国最长的河流</string>
+    <string name="cn_true">对</string>
+    <string name="cn_false">错</string>
+</resources>
