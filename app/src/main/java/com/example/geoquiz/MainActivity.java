@@ -92,18 +92,19 @@ public class MainActivity extends AppCompatActivity {
         //正确方法
         ViewModelProvider provider = new ViewModelProvider(this);
         quizViewModel = provider.get(QuizViewModel.class);
-        quizViewModel.creatQuesList(getApplicationContext());
+        if (quizViewModel.getList()==null) {
+            quizViewModel.creatQuesList(getApplicationContext());
 
-        int length = getIntent().getIntExtra("length",0);
-        for (int i = 7; i < length ; i++) {
-            if (getIntent().getSerializableExtra(String.format("ques%d",i))==null){
-                System.out.println("传入题目为空");
-            }else {
-                Question question = (Question) getIntent().getSerializableExtra(String.format("ques%d",i));
-                quizViewModel.addClass(question);
-            }
-
+            int length = getIntent().getIntExtra("length", 0);
+            for (int i = 7; i < length; i++) {
+                if (getIntent().getSerializableExtra(String.format("ques%d", i)) == null) {
+                    System.out.println("传入题目为空");
+                } else {
+                    Question question = (Question) getIntent().getSerializableExtra(String.format("ques%d", i));
+                    quizViewModel.addClass(question);
+                }
 //            quizViewModel.addClass( (Question) getIntent().getSerializableExtra(String.format("ques%d",i)));
+            }
         }
         if (savedInstanceState!=null){
             quizViewModel.setIndex(savedInstanceState.getInt("Index"));

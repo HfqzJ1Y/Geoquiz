@@ -83,6 +83,9 @@ public class QuizViewModel extends ViewModel {
     public void addClass(Question question){
         mQuestionArrayList.add(question);
     }
+    public ArrayList<Question> getList(){
+        return mQuestionArrayList;
+    }
 
     @Override
     protected void onCleared(){
