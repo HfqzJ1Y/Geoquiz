@@ -38,15 +38,14 @@ public class MainActivity extends AppCompatActivity {
         return i;
     }
 
-    public void setQuestion(int index){
-//        mTextView.setText(mQuestionsBank[index].getTextResId());
-            mTextView.setText(quizViewModel.currentQuesText());
+    public void setQuestion(){
+            mTextView.setText(String.format("%d/%d %s",quizViewModel.getIndex()+1,quizViewModel.getLength(),quizViewModel.currentQuesText()));
     }
     //对作弊警告判断并且处理作弊模块
     public void checkCheat(){
         if (mCurrentCheat&&quizViewModel.getCurrentFinish()){
             quizViewModel.setCheat();
-            quizViewModel.setCurrentFinish(false);
+            quizViewModel.setCurrentFinish();
             count+=1;
         }
         mCurrentCheat = false;
@@ -56,12 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (mCurrentCheat||quizViewModel.isCheat()) {
             Toast.makeText(this, "作弊警告", Toast.LENGTH_SHORT).show();
-//            if (quizViewModel.getCurrentFinish()) {
-//                count += 1;
-//                quizViewModel.setCurrentFinish(false);
-//                quizViewModel.setCheat();
-//                mCurrentCheat = false;
-//            }
+
             checkCheat();
         }else {
             if (quizViewModel.getCurrentFinish()) {
@@ -72,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.show_false, Toast.LENGTH_SHORT).show();
                 }
                 count += 1;
-                quizViewModel.setCurrentFinish(false);
+                quizViewModel.setCurrentFinish();
             } else {
                 Toast.makeText(this, "这题已经答过了 请下一题", Toast.LENGTH_SHORT).show();
             }
@@ -91,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         mLastButton = findViewById(R.id.last_imgBtn);
         mCheatButton = findViewById(R.id.cheat_btn);
 
-//        mTextView.setText(mQuestionsBank[mIndex].getTextResId());
 
 //viewModel
 //错误方法  这样创建viewModel每次creat时就会new一次不能达到容器的效果
@@ -99,6 +92,19 @@ public class MainActivity extends AppCompatActivity {
         //正确方法
         ViewModelProvider provider = new ViewModelProvider(this);
         quizViewModel = provider.get(QuizViewModel.class);
+        quizViewModel.creatQuesList(getApplicationContext());
+
+        int length = getIntent().getIntExtra("length",0);
+        for (int i = 7; i < length ; i++) {
+            if (getIntent().getSerializableExtra(String.format("ques%d",i))==null){
+                System.out.println("传入题目为空");
+            }else {
+                Question question = (Question) getIntent().getSerializableExtra(String.format("ques%d",i));
+                quizViewModel.addClass(question);
+            }
+
+//            quizViewModel.addClass( (Question) getIntent().getSerializableExtra(String.format("ques%d",i)));
+        }
         if (savedInstanceState!=null){
             quizViewModel.setIndex(savedInstanceState.getInt("Index"));
             mCurrentCheat = savedInstanceState.getBoolean("CurrentCheat");
@@ -106,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //初始化界面问题
-        setQuestion(quizViewModel.getIndex());
+        setQuestion();
         count = 0;
 
             mTrueButton.setOnClickListener(view -> {
@@ -121,18 +127,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         mNextButton.setOnClickListener(view -> {
-//            if (mCurrentCheat){
-//                if (quizViewModel.getCurrentFinish()) {
-//                    quizViewModel.setCheat();
-//                    quizViewModel.setCurrentFinish(false);
-//                    count+=1;
-//                }
-//            }
-//            mCurrentCheat = false;
             checkCheat();
 
             quizViewModel.setIndex((quizViewModel.getIndex()+1) % quizViewModel.getLength());
-            setQuestion(quizViewModel.getIndex());
+            setQuestion();
             if (quizViewModel.getIndex()==0&&count==quizViewModel.getLength()){
                 double x = Double.valueOf(countTrue)/Double.valueOf(count)*100;
                 Toast.makeText(this, "正确率为"+x+"%", Toast.LENGTH_SHORT).show();
@@ -140,33 +138,14 @@ public class MainActivity extends AppCompatActivity {
         } );
 
         mLastButton.setOnClickListener(view -> {
-//            if (mCurrentCheat&&quizViewModel.getCurrentFinish()){
-//                    quizViewModel.setCheat();
-//                    quizViewModel.setCurrentFinish(false);
-//                    count+=1;
-//
-//            }
-//            mCurrentCheat = false;
             checkCheat();
 
             quizViewModel.setIndex((quizViewModel.getIndex()+6) % quizViewModel.getLength());
-            setQuestion(quizViewModel.getIndex());
+            setQuestion();
         });
 
         mCheatButton.setOnClickListener(view -> {
-//            Intent i = new Intent(MainActivity.this,CheatActivity.class);
-//            i.putExtra("answer",quizViewModel.currentQuesAnswer());
-
-//            if (mCurrentCheat){
-//                if (quizViewModel.getCurrentFinish()) {
-//                    quizViewModel.setCheat();
-//                    quizViewModel.setCurrentFinish(false);
-//                    mCurrentCheat = false;
-//                    count+=1;
-//                }
-//            }
             Intent i =CheatActivity.newIntent(MainActivity.this,quizViewModel.currentQuesAnswer());
-//            startActivity(i);
             startActivityForResult(i,REQUEST_ACTIVITY_CHEAT);
 
         });
